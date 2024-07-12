@@ -1,0 +1,27 @@
+#!/bin/bash
+
+cur_dir=$(basename $(pwd))
+
+if [ "$cur_dir" != "CLI_Tools" ]; then
+    echo "setup should be run from CLI_Tools directory"
+    exit
+fi
+
+if [ "$1" = "clean" ]; then 
+    for file in "Scripts"/*; do 
+        if [ -f "$file" ]; then
+        chmod -x $file
+    fi        
+    done
+    
+    rm Data/goto_jumps.txt
+    exit
+fi
+
+for file in "Scripts"/*; do 
+    if [ -f "$file" ]; then
+        chmod +x $file
+    fi
+done
+
+touch Data/goto_jumps.txt

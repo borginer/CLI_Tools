@@ -1,0 +1,13 @@
+goto commands:
+
+goto add name:
+- add current path under alias name
+
+goto rm name:
+- remove alias named name
+
+goto list:
+- list all aliases
+
+goto name:
+- change diractory to path of alias name

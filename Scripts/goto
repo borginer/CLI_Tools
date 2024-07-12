@@ -1,0 +1,59 @@
+#!/bin/bash
+function goto() {
+    jumps_file=~/CLI_Tools/Data/goto_jumps.txt
+    help_str=~/CLI_Tools/Data/goto_help.txt
+    argc=$#
+
+    if [ "$1" = "help" ]; then
+        if [ $argc -eq 1 ]; then
+            cat "$help_str"
+            return
+        else
+            echo "Usage: goto help"
+            return
+        fi
+    fi
+
+    if [ "$1" = "add" ] && [ "$2" != "" ]; then
+        if [ $argc -eq 2 ]; then
+            echo "$2:$(pwd)" >>$jumps_file
+            return
+        else
+            echo "Usage: goto add name"
+            return
+        fi
+    fi
+
+    if [ "$1" = "list" ]; then
+        if [ $argc -eq 1 ]; then
+            while IFS= read -r line; do
+                echo $(echo "$line" | sed 's/:/ -> /g')
+            done <"$jumps_file"
+            return
+        else
+            echo "Usage: goto list"
+            return
+        fi
+    fi
+
+    if [ "$1" = "rm" ] && [ "$2" != "" ]; then
+        if [ $argc -eq 2 ]; then
+            sed "/^$2/d" "$jumps_file" >tmp
+            mv tmp "$jumps_file"
+            return
+        else
+            echo "Usage: goto rm name"
+            return
+        fi
+    fi
+
+    if [ "$1" != "" ] && [ $argc -eq 1 ]; then
+        new_path=$(grep "^$1" "$jumps_file" | cut -d ':' -f2)
+        cd $new_path
+        return
+    else
+        echo "Usage: goto name"
+        return
+    fi
+
+}
