@@ -47,9 +47,15 @@ function goto() {
         fi
     fi
 
-    if [ "$1" != "" ] && [ $argc -eq 1 ]; then
+    if [ "$argc" -eq 1 ] && [ "$1" != "" ]; then
         new_path=$(grep "^$1" "$jumps_file" | cut -d ':' -f2)
-        cd $new_path
+        if [ "$new_path" != "" ]; then
+            cd "$new_path"
+            
+        else 
+            echo "No entry named $1"
+        fi
+        
         return
     else
         echo "Usage: goto name"
