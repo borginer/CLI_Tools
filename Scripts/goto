@@ -3,7 +3,7 @@ function goto() {
     jumps_file=~/CLI_Tools/Data/goto_jumps.txt
     help_str=~/CLI_Tools/Data/goto_help.txt
     argc=$#
-
+    
     if [ "$1" = "help" ]; then
         if [ $argc -eq 1 ]; then
             cat "$help_str"
@@ -17,6 +17,7 @@ function goto() {
     if [ "$1" = "add" ] && [ "$2" != "" ]; then
         if [ $argc -eq 2 ]; then
             echo "$2:$(pwd)" >>$jumps_file
+            sort -k 1,1 "$jumps_file" -o "$jumps_file"
             return
         else
             echo "Usage: goto add name"
@@ -27,8 +28,17 @@ function goto() {
     if [ "$1" = "list" ]; then
         if [ $argc -eq 1 ]; then
             while IFS= read -r line; do
-                echo $(echo "$line" | sed 's/:/ -> /g')
-            done <"$jumps_file"
+                new_line=$(echo "$line" | sed 's/:/ -> /g')
+                
+                last_word=$(basename "$new_line")
+                first_word="${new_line%% ->*}"
+
+                path_part="${new_line#* -> }"
+                middle_part="${path_part%/*$last_word}"
+                
+                colored_line="\033[1;33m$first_word\033[0m -> $middle_part/\033[1;32m$last_word\033[0m"
+                echo -e "$colored_line"
+            done < "$jumps_file"
             return
         else
             echo "Usage: goto list"
