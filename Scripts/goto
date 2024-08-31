@@ -16,6 +16,9 @@ function goto() {
 
     if [ "$1" = "add" ] && [ "$2" != "" ]; then
         if [ $argc -eq 2 ]; then
+            sed "/^$2:/d" "$jumps_file" >tmp
+            mv tmp "$jumps_file"
+
             echo "$2:$(pwd)" >>$jumps_file
             sort -k 1,1 "$jumps_file" -o "$jumps_file"
             return
@@ -28,8 +31,7 @@ function goto() {
     if [ "$1" = "list" ]; then
         if [ $argc -eq 1 ]; then
             while IFS= read -r line; do
-                new_line=$(echo "$line" | sed 's/:/ -> /g')
-                
+                new_line=$(echo "$line" | sed 's/:/ -> /g') 
                 last_word=$(basename "$new_line")
                 first_word="${new_line%% ->*}"
 
@@ -48,7 +50,7 @@ function goto() {
 
     if [ "$1" = "rm" ] && [ "$2" != "" ]; then
         if [ $argc -eq 2 ]; then
-            sed "/^$2/d" "$jumps_file" >tmp
+            sed "/^$2:/d" "$jumps_file" >tmp
             mv tmp "$jumps_file"
             return
         else
